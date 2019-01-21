@@ -80,13 +80,13 @@ from coarsening import rescale_L
 
 # Delete existing network if exists
 
-d=np.linspace(0,1,20, endpoint=False)
+d=[1e-8,1e-7,1e-6,1e-5,1e-4,1e-3,1e-2,1e-1,1e+0,1e+1,1e+2,1e+3,1e+4,1e+5,1e+6]
 print(d)
 a=[]
 # loop over epochs
 for decay in d:
 
-    print("decay rate=%.3f" %(decay))
+    print("l2=%.8f" %(decay))
     t_start = time.time()
     grid_side = 28
     number_edges = 8
@@ -352,8 +352,8 @@ for decay in d:
 
     # learning parameters
     learning_rate = 0.05
-    dropout_value = 0.0
-    l2_regularization = 5e-4
+    dropout_value = 0.3
+    l2_regularization = decay
     batch_size = 100
     num_epochs = 30
     train_size = train_data.shape[0]
@@ -424,6 +424,7 @@ for decay in d:
               (epoch+1, running_loss/running_total, running_accuray/running_total, t_stop, lr))
 
 
+
         # update learning rate
         lr = global_lr * pow( decay , float(global_step// decay_steps) )
         optimizer = net.update_learning_rate(optimizer, lr)
@@ -448,8 +449,9 @@ for decay in d:
             running_total_test += 1
         t_stop_test = time.time() - t_start_test
         print('  accuracy(test) = %.3f %%, time= %.3f' % (running_accuray_test / running_total_test, t_stop_test))
+        a.append(running_accuray_test / running_total_test)
 
-    a.append(running_accuray_test / running_total_test)
+
     L, perm = coarsen(A, coarsening_levels)
 
     # Compute max eigenvalue of graph Laplacians
@@ -469,5 +471,6 @@ for decay in d:
 
     print('Execution time: {:.2f}s'.format(time.time() - t_start))
     del perm
+
 print(a)
 plt.plot(a)
