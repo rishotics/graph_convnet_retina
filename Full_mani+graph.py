@@ -85,7 +85,7 @@ print(d)
 a=[]
 # loop over epochs
 for decay in d:
-
+    print(a)
     print("l2=%.8f" %(decay))
     t_start = time.time()
     grid_side = 28
@@ -449,9 +449,9 @@ for decay in d:
             running_total_test += 1
         t_stop_test = time.time() - t_start_test
         print('  accuracy(test) = %.3f %%, time= %.3f' % (running_accuray_test / running_total_test, t_stop_test))
-        a.append(running_accuray_test / running_total_test)
 
 
+    a.append(running_accuray_test / running_total_test)
     L, perm = coarsen(A, coarsening_levels)
 
     # Compute max eigenvalue of graph Laplacians
