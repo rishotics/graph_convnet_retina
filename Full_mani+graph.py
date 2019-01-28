@@ -80,15 +80,15 @@ from coarsening import rescale_L
 
 # Delete existing network if exists
 
-d=[1e-8,1e-7,1e-6,1e-5,1e-4,1e-3,1e-2,1e-1,1e+0,1e+1,1e+2,1e+3,1e+4,1e+5,1e+6]
-print(d)
+grid=[22]
+print(grid)
 a=[]
 # loop over epochs
-for decay in d:
+for gd in grid:
     print(a)
-    print("l2=%.8f" %(decay))
+    print("grid size=%.8f" %(gd))
     t_start = time.time()
-    grid_side = 28
+    grid_side = gd
     number_edges = 8
     metric = 'euclidean'
     A = grid_graph(grid_side,number_edges,metric) # create graph of Euclidean grid
@@ -275,6 +275,10 @@ for decay in d:
             x = F.relu(x)
             x = self.graph_max_pool(x, 4)
 
+            #graph CL3
+
+
+
             # FC1
             x = x.view(-1, self.FC1Fin)
             x = self.fc1(x)
@@ -330,10 +334,11 @@ for decay in d:
 
     # network parameters
     D = train_data.shape[1]
-    CL1_F = 32
+    CL1_F = 64
     CL1_K = 25
-    CL2_F = 64
+    CL2_F = 128
     CL2_K = 25
+
     FC1_F = 512
     FC2_F = 10
     net_parameters = [D, CL1_F, CL1_K, CL2_F, CL2_K, FC1_F, FC2_F]
@@ -353,7 +358,7 @@ for decay in d:
     # learning parameters
     learning_rate = 0.05
     dropout_value = 0.3
-    l2_regularization = decay
+    l2_regularization = 5e-4
     batch_size = 100
     num_epochs = 30
     train_size = train_data.shape[0]
