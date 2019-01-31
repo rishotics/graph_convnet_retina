@@ -324,6 +324,24 @@ for gd in grid:
 
             _, class_predicted = torch.max(y_predicted.data, 1)
             return 100.0* (class_predicted == test_l).sum()/ y_predicted.size(0)
+
+        def confusion(self, y_predicted, test_l):
+            _, class_predicted = torch.max(y_predicted.data, 1)
+            from sklearn.metrics import confusion_matrix
+            print(class_predicted)
+            print("sv")
+            print(test_l)
+            CM = confusion_matrix(test_l, class_predicted)
+            TN = CM[0][0]
+            FN = CM[1][0]
+            TP = CM[1][1]
+            FP = CM[0][1]
+        #    confusion_vector = class_predicted / test_l
+
+            sensitivity=TP/(TP+FN)
+            specitivity=TN/(TN+FP)
+
+            return sensitivity,specitivity
     try:
         del net
         print('Delete existing network\n')
@@ -340,7 +358,7 @@ for gd in grid:
     CL2_K = 25
 
     FC1_F = 512
-    FC2_F = 10
+    FC2_F = 2
     net_parameters = [D, CL1_F, CL1_K, CL2_F, CL2_K, FC1_F, FC2_F]
 
 
@@ -450,6 +468,7 @@ for gd in grid:
             test_y = torch.LongTensor(test_y).type(dtypeLong)
             test_y = Variable( test_y , requires_grad=False)
             acc_test = net.evaluation(y,test_y.data)
+
             running_accuray_test += acc_test
             running_total_test += 1
         t_stop_test = time.time() - t_start_test
@@ -457,6 +476,9 @@ for gd in grid:
 
 
     a.append(running_accuray_test / running_total_test)
+    sensitivity,specitivity = net.confusion(y,test_y.data)
+    print("sensitivity= %.3f %% specitivity= %.3f" % (sensitivity,specitivity))
+
     L, perm = coarsen(A, coarsening_levels)
 
     # Compute max eigenvalue of graph Laplacians
